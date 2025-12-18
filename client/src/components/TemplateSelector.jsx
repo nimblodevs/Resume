@@ -25,69 +25,24 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
       name: "Minimal with Image",
       preview: "Minimal design that includes a profile image.",
     },
-    {
-      id: "startup",
-      name: "Startup",
-      preview: "Modern CV focused on skills and projects for startups.",
-    },
-    {
-      id: "creative",
-      name: "Creative",
-      preview: "A visually appealing template with colors and graphics.",
-    },
-    {
-      id: "designer",
-      name: "Designer",
-      preview: "Portfolio-heavy template for designers.",
-    },
-    {
-      id: "infographic",
-      name: "Infographic",
-      preview: "Uses charts and visuals to represent skills and experience.",
-    },
-    {
-      id: "tech",
-      name: "Tech",
-      preview: "Modern, clean template for technical CVs with skills emphasis.",
-    },
-    {
-      id: "executive",
-      name: "Executive",
-      preview: "Professional template tailored for executive profiles.",
-    },
-    // New templates
-    {
-      id: "timeline",
-      name: "Timeline",
-      preview:
-        "A structured template showing career milestones in timeline format.",
-    },
-    {
-      id: "elegant",
-      name: "Elegant",
-      preview: "Sophisticated, stylish CV with elegant typography.",
-    },
-    {
-      id: "tech-modern",
-      name: "Tech Modern",
-      preview: "Modern tech-focused template with clean sections and colors.",
-    },
   ];
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-sm text-blue-600 bg-gradient-to-br from-blue-50 to-blue-100 ring-blue-300 hover:ring transition-all px-3 py-2 rounded-lg"
+        className="flex items-center gap-1 text-sm text-blue-600 bg-gradient-to-br
+         from-blue-50 to-blue-100 ring-blue-300 hover:ring transition-all px-3 py-2 rounded-lg"
       >
         <Layout size={14} /> <span className="max-sm:hidden">Template</span>
       </button>
 
       {isOpen && (
         <div className="absolute top-full mt-2 w-80 max-h-[calc(4*96px)] overflow-y-auto p-3 space-y-3 z-10 bg-white border border-gray-200 rounded-md shadow-sm">
+          {/* Close button */}
           <button
             onClick={() => setIsOpen(false)}
-            className="absolute top-1 right-1 p-2 rounded-full hover:bg-gray-200 transition-all"
+            className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200 transition-all"
           >
             <X size={16} />
           </button>

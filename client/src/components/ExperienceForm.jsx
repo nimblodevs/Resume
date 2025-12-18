@@ -10,7 +10,7 @@ const ExperienceForm = ({ data, onChange }) => {
       start_date: "",
       end_date: "",
       description: "",
-      is_Current: false,
+      is_current: false,
     };
     onChange([...data, newExperience]);
   };
@@ -102,11 +102,11 @@ const ExperienceForm = ({ data, onChange }) => {
                 />
                 <input
                   type="month"
-                  value={experience.is_Current ? "" : experience.end_date || ""}
+                  value={experience.is_current ? "" : experience.end_date || ""}
                   onChange={(e) =>
                     updateExperience(index, "end_date", e.target.value)
                   }
-                  disabled={experience.is_Current}
+                  disabled={experience.is_current}
                   className="w-1/2 px-3 py-2 text-sm rounded-lg border border-gray-300 disabled:bg-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -115,7 +115,7 @@ const ExperienceForm = ({ data, onChange }) => {
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={experience.is_Current || false}
+                  checked={experience.is_current || false}
                   onChange={(e) => {
                     const checked = e.target.checked;
                     onChange(
@@ -123,7 +123,7 @@ const ExperienceForm = ({ data, onChange }) => {
                         i === index
                           ? {
                               ...exp,
-                              is_Current: checked,
+                              is_current: checked,
                               end_date: checked ? "" : exp.end_date,
                             }
                           : exp
