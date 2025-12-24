@@ -18,7 +18,9 @@ const Preview = () => {
     loadResume();
   }, []);
 
-  return resumeData ? <div></div> : <Loader />;
+  return resumeData ? <div className="bg-slate-100">
+    <div></div>
+  </div> : <Loader />;
 };
 
 export default Preview;
