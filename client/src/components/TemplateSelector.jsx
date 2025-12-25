@@ -1,45 +1,28 @@
+import React, { useState } from "react";
 import { Check, Layout, X } from "lucide-react";
-import React from "react";
 
 const TemplateSelector = ({ selectedTemplate, onChange }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const templates = [
-    {
-      id: "classic",
-      name: "Classic",
-      preview: "A clean, traditional resume format with clear sections.",
-    },
-    {
-      id: "modern",
-      name: "Modern",
-      preview: "A sleek, contemporary design with clean typography.",
-    },
-    {
-      id: "minimal",
-      name: "Minimal",
-      preview: "A simple, elegant layout with ample white space.",
-    },
-    {
-      id: "minimal-image",
-      name: "Minimal with Image",
-      preview: "Minimal design that includes a profile image.",
-    },
+    { id: "classic", name: "Classic", preview: "A clean, traditional resume format with clear sections." },
+    { id: "modern", name: "Modern", preview: "A sleek, contemporary design with clean typography." },
+    { id: "minimal", name: "Minimal", preview: "A simple, elegant layout with ample white space." },
+    { id: "minimal-image", name: "Minimal with Image", preview: "Minimal design that includes a profile image." },
   ];
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-sm text-blue-600 bg-gradient-to-br
-         from-blue-50 to-blue-100 ring-blue-300 hover:ring transition-all px-3 py-2 rounded-lg"
+        className="flex items-center gap-1 text-sm text-blue-600 bg-gradient-to-br from-blue-50 to-blue-100 ring-blue-300 hover:ring transition-all px-3 py-2 rounded-lg"
       >
-        <Layout size={14} /> <span className="max-sm:hidden">Template</span>
+        <Layout size={14} />
+        <span className="max-sm:hidden">Template</span>
       </button>
 
       {isOpen && (
         <div className="absolute top-full mt-2 w-80 max-h-[calc(4*96px)] overflow-y-auto p-3 space-y-3 z-10 bg-white border border-gray-200 rounded-md shadow-sm">
-          {/* Close button */}
           <button
             onClick={() => setIsOpen(false)}
             className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200 transition-all"
@@ -67,11 +50,9 @@ const TemplateSelector = ({ selectedTemplate, onChange }) => {
                   </div>
                 </div>
               )}
-              <div className="space-y-1">
-                <h4 className="font-medium text-gray-800">{template.name}</h4>
-                <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-500 italic">
-                  {template.preview}
-                </div>
+              <h4 className="font-medium text-gray-800">{template.name}</h4>
+              <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-500 italic">
+                {template.preview}
               </div>
             </div>
           ))}

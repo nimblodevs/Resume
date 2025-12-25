@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Check, Palette, X } from "lucide-react";
-import React from "react";
 
 const ColorPicker = ({ selectedColor, onChange }) => {
   const colors = [
@@ -29,11 +29,10 @@ const ColorPicker = ({ selectedColor, onChange }) => {
     { name: "Olive", value: "#808000" },
   ];
 
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="relative">
-      {/* Button to toggle color picker */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1 text-sm text-purple-600 bg-gradient-to-br from-purple-50 to-purple-100 ring-purple-300 hover:ring transition-all px-3 py-2 rounded-lg"
@@ -42,10 +41,8 @@ const ColorPicker = ({ selectedColor, onChange }) => {
         <span className="max-sm:hidden">Accent</span>
       </button>
 
-      {/* Color palette dropdown */}
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-72 p-3 grid grid-cols-4 gap-3 z-10 bg-white rounded-md border border-gray-200 shadow-sm">
-          {/* Close button */}
           <button
             onClick={() => setIsOpen(false)}
             className="absolute top-2 right-2 p-1 rounded-full hover:bg-gray-200 transition-all"
@@ -63,7 +60,7 @@ const ColorPicker = ({ selectedColor, onChange }) => {
               }}
             >
               <div
-                className="w-8 h-8 rounded-full relative flex items-center justify-center"
+                className="w-8 h-8 rounded-full flex items-center justify-center"
                 style={{ backgroundColor: color.value }}
               >
                 {selectedColor === color.value && (

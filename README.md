@@ -41,3 +41,25 @@ enhancements. Keep changes focused and include brief descriptions in PRs.
 ## License
 
 This project is available under the MIT License (see LICENSE if included).
+
+           🚀 Node.js starts
+                     │
+                     ▼
+          🖥️ Server starts listening
+          on PORT (e.g., 3000)
+                     │
+                     ▼
+          🔄 connectWithRetry() attempts DB connect
+                     │
+        ┌───────────┴───────────┐
+        │                       │
+      ✅ Success                ❌ Fail
+        │                       │
+        ▼                       ▼
+💾 DB connected          ⏱️ Retry after delay
+isDBConnected = true      (5s → 10s → 20s → max 30s)
+        │                       │
+        ▼                       ▼
+🟢 dbReady allows routes   🚫 dbReady blocks requests
+to run normally            Routes return 503
+
