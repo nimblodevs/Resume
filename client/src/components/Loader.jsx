@@ -2,9 +2,9 @@ import React from "react";
 
 const Loader = () => {
   return (
-    <div className="flex items-center justify-between h-screen">
+    <div className="flex items-center justify-center h-screen">
       <div
-        className="size-12 border border-gray-400 
+        className="size-16 border border-gray-400 
        border-t-transparent rounded-full animate-spin"
       ></div>
     </div>
@@ -12,3 +12,5 @@ const Loader = () => {
 };
 
 export default Loader;
+
+

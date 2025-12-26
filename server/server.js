@@ -4,12 +4,33 @@ import "dotenv/config";
 import { connectDB, disconnectDB, isDBConnected } from "./config/db.js";
 import dbReady from "./middlewares/dbReady.js";
 import userRouter from "./routes/userRoutes.js";
+import resumeRouter from "./routes/resumeRoutes.js";
+import aiRouter from "./routes/aiRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 /* ---------------- MIDDLEWARE ---------------- */
-app.use(cors());
+// Enable CORS for your frontend URL only (replace with your actual frontend URL)
+const allowedOrigins = [
+  'http://localhost:5173', // Frontend URL
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        // Allow requests from specified origins or if there is no origin (e.g., Postman or server-side requests)
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ['GET', 'POST', 'OPTIONS'], // Allow methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow custom headers like Content-Type, Authorization
+  })
+);
+
 app.use(express.json());
 
 /* ---------------- HEALTH CHECK ---------------- */
@@ -24,13 +45,14 @@ app.get("/health", (req, res) => {
 /* ---------------- DB-READY BLOCK ---------------- */
 app.use(dbReady);
 
-/* ---------------- ROOT ROUTE ---------------- */
+/* ---------------- ROUTES ---------------- */
 app.get("/", (req, res) => {
   res.send("🚀 Server is live and DB is connected!");
 });
 
-/* ---------------- USER ROUTES ---------------- */
 app.use("/api/users", userRouter);
+app.use("/api/resumes", resumeRouter);
+app.use("/api/ai", aiRouter);
 
 /* ---------------- DB RETRY LOGIC ---------------- */
 let retryDelay = 5000;

@@ -11,16 +11,23 @@ const Preview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [resumeData, setResumeData] = useState(null);
 
-  const loadResume = () => {
-    setIsLoading(true);
-    const data = dummyResumeData.find((resume) => resume._id === resumeId);
+const loadResume = () => {
+  setIsLoading(true);
+
+  setTimeout(() => {
+    const data = dummyResumeData.find(
+      (resume) => resume._id === resumeId
+    );
+
     setResumeData(data || null);
     setIsLoading(false);
-  };
+  }, 500); // 500ms delay
+};
 
-  useEffect(() => {
-    loadResume();
-  }, [resumeId]);
+useEffect(() => {
+  loadResume();
+}, [resumeId]);
+
 
   return (
     <div>
