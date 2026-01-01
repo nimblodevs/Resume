@@ -153,7 +153,7 @@ export const updateResume = async (req, res) => {
     // Parse resumeData safely
     let resumeDataCopy;
     try {
-      resumeDataCopy = JSON.parse(resumeData);
+      resumeDataCopy = JSON.parse(JSON.stringify(resumeData));
     } catch {
       return res.status(400).json({
         status: "error",
