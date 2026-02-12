@@ -16,18 +16,17 @@ import toast from "react-hot-toast";
 import pdftotext from "react-pdftotext";
 
 const Dashboard = () => {
-  const { user, token } = useSelector((state) => state.auth);
-
-  const [allResumes, setAllResumes] = React.useState([]);
-  const [showCreateResume, setShowCreateResume] = React.useState(false);
-  const [showUploadResume, setShowUploadResume] = React.useState(false);
-  const [title, setTitle] = React.useState("");
-  const [resume, setResume] = React.useState(null);
-  const [editResumeId, setEditResumeId] = React.useState(null);
-
-  const [isLoading, setIsLoading] = useState(false);
-
+  const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+
+  const [resume, setResume] = useState()
+  const [allResumes, setAllResumes] = useState([]);
+  const [title, setTitle] = useState("");
+  const [resumeFile, setResumeFile] = useState(null);
+  const [editResumeId, setEditResumeId] = useState(null);
+  const [showCreateResume, setShowCreateResume] = useState(false);
+  const [showUploadResume, setShowUploadResume] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const colors = [
     "#0284c7",
@@ -38,28 +37,42 @@ const Dashboard = () => {
     "#ef4444",
     "#dc2626",
     "#d97706",
-    "#0284c7",
     "#16a34a",
   ];
 
+  // ==============================
+  // Load Resumes
+  // ==============================
+  const loadAllResumes = async () => {
+    try {
+      const { data } = await api.get("/api/users/resumes", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAllResumes(data.resumes);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (token) loadAllResumes();
+  }, [token]);
+
+  // ==============================
+  // Create Resume
+  // ==============================
   const createResume = async (e) => {
     e.preventDefault();
+    if (!title.trim()) return toast.error("Title is required");
 
-    if (!title.trim()) {
-      return toast.error("Title is required");
-    }
     try {
       const { data } = await api.post(
         "/api/resumes/create",
         { title },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setAllResumes([...allResumes, data.resume]);
-      //setAllResumes((prev) => [...prev, data.resume]);
+
+      setAllResumes((prev) => [...prev, data.resume]);
       setTitle("");
       setShowCreateResume(false);
       navigate(`/app/builder/${data.resume._id}`);
@@ -68,99 +81,108 @@ const Dashboard = () => {
     }
   };
 
+  // ==============================
+  // Upload Resume
+  // ==============================
   const uploadResume = async (e) => {
     e.preventDefault();
-
+  
     if (!title.trim()) return toast.error("Title is required");
-    if (!resume) return toast.error("Resume file is required");
-
+    if (!resumeFile) return toast.error("Resume file is required");
+  
     setIsLoading(true);
-
+  
     try {
-      const resumeText = await pdftotext(resume);
-
+      // Convert PDF to text
+      const resumeText = await pdftotext(resumeFile);
+  
+      // Send to backend
       const { data } = await api.post(
         "/api/ai/upload-resume",
         { title, resumeText },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
+      // Ensure resume object exists
+      if (!data.resume || !data.resume._id) {
+        throw new Error("Invalid response from server");
+      }
+  
+      // Reset form
       setTitle("");
-      setResume(null);
+      setResumeFile(null);
       setShowUploadResume(false);
+  
+      // Update local state to include the new resume
+      setAllResumes((prev) => [...prev, data.resume]);
+  
+      // Navigate to builder
       navigate(`/app/builder/${data.resume._id}`);
+  
+      toast.success("Resume uploaded successfully!");
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      console.error("Upload resume error:", error);
+      toast.error(
+        error?.response?.data?.message || error.message || "Failed to upload resume"
+      );
     } finally {
       setIsLoading(false);
     }
   };
+  
 
-  const loadAllResumes = async () => {
-    e.preventDefault();
-    try {
-      const data = await api.post("/api/users/resumes", {
-        header: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setAllResumes(data.resumes);
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
-    }
-  };
-
+  // ==============================
+  // Edit Resume Title
+  // ==============================
   const editTitle = async (e) => {
     e.preventDefault();
+
     try {
-      const data = await api.put(
+      const { data } = await api.put(
         "/api/resumes/update",
         { resumeId: editResumeId, resumeData: { title } },
-        {
-          header: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      setAllResumes(
-        allResumes,
-        map((resume) =>
-          resume._id === editResumeId ? { ...resume, title } : resume
+
+      setAllResumes((prev) =>
+        prev.map((resume) =>
+          resume._id === editResumeId
+            ? { ...resume, title }
+            : resume
         )
       );
-      setTitle('')
-      setEditResumeId("");
-      toast.success(data.message)
-    } catch (error) {}
-  };
 
-  const deleteResume = async (resumeId) => {
-    e.preventDefault();
-    try {
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete this resume?"
-      );
-      if (confirmDelete) {
-        const data = await api.delete(`/api/resumes/delete/${resumeId}`, {
-          header: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setAllResumes(allResumes.filter((resume) => resume._id !== resumeId));
-        toast.success(data.message);
-      }
+      setTitle("");
+      setEditResumeId(null);
+      toast.success(data.message);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     }
   };
 
-  useEffect(() => {
-    loadAllResumes();
-  }, []);
+  // ==============================
+  // Delete Resume
+  // ==============================
+  const deleteResume = async (resumeId) => {
+    if (!window.confirm("Are you sure you want to delete this resume?"))
+      return;
+
+    try {
+      const { data } = await api.delete(
+        `/api/resumes/delete/${resumeId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setAllResumes((prev) =>
+        prev.filter((resume) => resume._id !== resumeId)
+      );
+
+      toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
 
   return (
     <div>
@@ -315,8 +337,8 @@ const Dashboard = () => {
               <label htmlFor="resume-input" className="block text-sm">
                 Select resume file
                 <div className="flex flex-col items-center justify-center w-full gap-2 border border-dashed rounded-md p-4 py-10 my-4 hover:border-green-500 text-slate-400 hover:text-green-700 cursor-pointer">
-                  {resume ? (
-                    <p className="text-sm text-green-700">{resume.name}</p>
+                  {resumeFile ? (
+                    <p className="text-sm text-green-700">{resumeFile.name}</p>
                   ) : (
                     <>
                       <UploadCloud className="size-10" />
@@ -333,8 +355,7 @@ const Dashboard = () => {
                 type="file"
                 accept=".pdf"
                 className="hidden"
-                onChange={(e) => setResume(e.target.files[0])}
-                required
+                onChange={(e) => setResumeFile(e.target.files[0])}
               />
 
               <button

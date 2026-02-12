@@ -13,7 +13,7 @@ const PORT = process.env.PORT;
 /* ---------------- MIDDLEWARE ---------------- */
 // Enable CORS for your frontend URL only (replace with your actual frontend URL)
 const allowedOrigins = [
-  'http://localhost:5173', // Frontend URL
+  'https://gg4rj5-5173.csb.app', // Frontend URL
 ];
 
 app.use(
@@ -26,7 +26,7 @@ app.use(
         callback(new Error('Not allowed by CORS'));
       }
     },
-    methods: ['GET', 'POST', 'OPTIONS'], // Allow methods
+    methods: ['GET', 'POST', 'OPTIONS','DELETE', 'PUT'], // Allow methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow custom headers like Content-Type, Authorization
   })
 );

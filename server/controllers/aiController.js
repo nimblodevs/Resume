@@ -128,26 +128,18 @@ export const uploadResume = async (req, res) => {
     const { resumeText, title } = req.body;
     const userId = req.userId;
 
-    // Basic validation
-    if (!userId) {
+    if (!userId)
       return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    if (!resumeText || !title) {
+    if (!resumeText || !title)
       return res.status(400).json({ message: "Missing required fields" });
-    }
 
+    // OpenAI prompts
     const systemPrompt =
       "You are a strict resume parser. Extract only information explicitly present in the resume. Do not guess or invent data.";
-
     const userPrompt = `Extract structured data from the following resume text.
-
 Resume:
 ${resumeText}
-
-Return ONLY valid JSON with NO additional text.
-Use this exact structure:
-
+Return ONLY valid JSON using this structure:
 {
   "professional_summary": "",
   "personal_info": {
@@ -185,8 +177,7 @@ Use this exact structure:
       "gpa": ""
     }
   ]
-}
-`;
+}`;
 
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL,
@@ -206,22 +197,79 @@ Use this exact structure:
       return res.status(500).json({
         status: "error",
         message: "AI returned invalid JSON",
+        error: err.message,
       });
     }
 
+    // --- Clean experience dates ---
+    parsedData.experience = (parsedData.experience || []).map((exp) => {
+      // Required fields fallback
+      const company = exp.company || "Unknown Company";
+      const position = exp.position || "Unknown Position";
+
+      // Parse start_date safely
+      const start_date = exp.start_date ? new Date(exp.start_date) : new Date();
+
+      // Parse end_date or handle "Present"
+      let end_date = null;
+      let is_current = !!exp.is_current;
+
+      if (exp.end_date && typeof exp.end_date === "string") {
+        const str = exp.end_date.trim().toLowerCase();
+        if (["present", "now", "current"].includes(str)) {
+          end_date = null;
+          is_current = true;
+        } else {
+          const parsedEnd = new Date(exp.end_date);
+          end_date = isNaN(parsedEnd) ? null : parsedEnd;
+        }
+      } else if (exp.end_date instanceof Date) {
+        end_date = exp.end_date;
+      }
+
+      return {
+        company,
+        position,
+        start_date,
+        end_date,
+        description: exp.description || "",
+        is_current,
+      };
+    });
+
+    // --- Clean education dates ---
+    parsedData.education = (parsedData.education || []).map((edu) => ({
+      institution: edu.institution || "Unknown Institution",
+      degree: edu.degree || "",
+      field: edu.field || "",
+      graduation_date: edu.graduation_date
+        ? new Date(edu.graduation_date)
+        : null,
+      gpa: edu.gpa || "",
+    }));
+
+    // --- Ensure projects array ---
+    parsedData.projects = (parsedData.projects || []).map((proj) => ({
+      name: proj.name || "Unnamed Project",
+      type: proj.type || "",
+      description: proj.description || "",
+    }));
+
+    // --- Save to DB ---
     const newResume = await Resume.create({
       userId,
       title,
-      professional_summary: parsedData.professional_summary,
-      personal_info: parsedData.personal_info,
+      professional_summary: parsedData.professional_summary || "",
+      personal_info: parsedData.personal_info || {},
       experience: parsedData.experience,
       projects: parsedData.projects,
       education: parsedData.education,
     });
 
+    // Return full resume object for frontend
     return res.status(200).json({
       status: "success",
-      resumeId: newResume._id,
+      resume: newResume,
     });
   } catch (error) {
     console.error("Upload resume error:", error);
@@ -232,3 +280,4 @@ Use this exact structure:
     });
   }
 };
+
