@@ -153,7 +153,11 @@ export const updateResume = async (req, res) => {
     // Parse resumeData safely
     let resumeDataCopy;
     try {
-      resumeDataCopy = JSON.parse(JSON.stringify(resumeData));
+      if (typeof resumeData === "string") {
+        resumeDataCopy = await JSON.parse(resumeData);
+      } else {
+        resumeDataCopy = structuredClone(resumeData);
+      }
     } catch {
       return res.status(400).json({
         status: "error",
@@ -189,7 +193,7 @@ export const updateResume = async (req, res) => {
     const resume = await Resume.findOneAndUpdate(
       { _id: resumeId, userId }, // filter by _id + owner
       resumeDataCopy,
-      { new: true, runValidators: true } // return updated doc & validate
+      { returnDocument: "after", runValidators: true } // return updated doc & validate
     );
 
     if (!resume) {

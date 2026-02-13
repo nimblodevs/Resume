@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { dummyResumeData } from "../assets/assets";
-import Loader from "../components/Loader";
 import ResumePreview from "../components/ResumePreview";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, Loader2 } from "lucide-react";
+import api from "../configs/api";
 
 const Preview = () => {
   const { resumeId } = useParams();
@@ -11,28 +10,31 @@ const Preview = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [resumeData, setResumeData] = useState(null);
 
-const loadResume = () => {
-  setIsLoading(true);
+  const loadResume = async () => {
+    setIsLoading(true);
+    try {
+      const { data } = await api.get(`/api/resumes/public/${resumeId}`);
+      setTimeout(() => {
+        setResumeData(data.resume || null);
+        setIsLoading(false);
+      }, 500);
+    } catch (error) {
+      console.error(error?.message || error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  setTimeout(() => {
-    const data = dummyResumeData.find(
-      (resume) => resume._id === resumeId
-    );
-
-    setResumeData(data || null);
-    setIsLoading(false);
-  }, 500); // 500ms delay
-};
-
-useEffect(() => {
-  loadResume();
-}, [resumeId]);
-
+  useEffect(() => {
+    loadResume();
+  }, [resumeId]);
 
   return (
     <div>
       {isLoading ? (
-        <Loader />
+        <div className="flex items-center justify-center h-screen">
+          <Loader2 className="animate-spin text-gray-300 w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16" />
+        </div>
       ) : resumeData ? (
         <div className="bg-slate-100">
           <div className="max-w-3xl mx-auto py-10">
@@ -49,13 +51,14 @@ useEffect(() => {
           <p className="text-center text-6xl text-slate-400 font-medium">
             Resume not found
           </p>
+
           <Link
             to="/"
             className="mt-6 bg-green-500 hover:bg-green-600 text-white rounded-full
             px-6 h-9 m-1 ring-offset-1 ring-1 ring-green-400 flex items-center 
             transition-colors"
           >
-            <ArrowLeftIcon className="mr-2 size-4" />
+            <ArrowLeftIcon className="mr-2 w-4 h-4" />
             go to home page
           </Link>
         </div>

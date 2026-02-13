@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 const ResumeSchema = new mongoose.Schema(
   {
     // Reference to the user who owns this resume
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
     // Basic resume info
     title: { type: String, default: "Untitled Resume" },
@@ -15,7 +19,7 @@ const ResumeSchema = new mongoose.Schema(
     // Personal information
     personal_info: {
       image: { type: String, default: "" },
-      full_name: { type: String, default: "" },
+      full_name: { type: String, default: " " },
       email: { type: String, default: "" },
       phone: { type: String, default: "" },
       location: { type: String, default: "" },

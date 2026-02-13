@@ -21,6 +21,9 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 
 // Form Components
 import PersonalInfoForm from "../components/PersonalInfoForm";
@@ -39,6 +42,7 @@ import TemplateSelector from "../components/TemplateSelector";
 const ResumeBuilder = () => {
   // Get resume ID from URL params
   const { resumeId } = useParams();
+  const { token } = useSelector((state) => state.auth);
 
   // ---------------------- State ----------------------
   const [resumeData, setResumeData] = useState({
@@ -62,11 +66,18 @@ const ResumeBuilder = () => {
   const [removeBackground, setRemoveBackground] = useState(false);
 
   // ---------------------- Load Resume ----------------------
-  const loadExistingResume = () => {
-    const resume = dummyResumeData.find((r) => r._id === resumeId);
-    if (resume) {
-      setResumeData(resume);
-      document.title = resume.title;
+  const loadExistingResume = async () => {
+    try {
+      const { data } = await api.get("/api/resumes/get/" + resumeId, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -91,8 +102,24 @@ const ResumeBuilder = () => {
   // ---------------------- Actions ----------------------
 
   // Toggle resume public/private visibility
-  const changeResumeVisibility = () => {
-    setResumeData((prev) => ({ ...prev, public: !prev.public }));
+  const changeResumeVisibility = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append(
+        "resumeData",
+        JSON.stringify({ public: !resumeData.public })
+      );
+
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setResumeData({ ...resumeData, public: !resumeData.public });
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error saving resume:", error);
+    }
   };
 
   // Share resume link (Web Share API)
@@ -119,6 +146,34 @@ const ResumeBuilder = () => {
     window.print();
   };
 
+  const saveResume = async () => {
+    try {
+      let updateResumeData = structuredClone(resumeData);
+
+      //Remove image from the updateResumeData
+      if (typeof resumeData.personal_info.image === "object") {
+        delete updateResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updateResumeData));
+
+      removeBackground && formData.append("removeBackground", "yes");
+      typeof resumeData.personal_info.image === "object" &&
+        formData.append("image", resumeData.personal_info.image);
+
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setResumeData(data.resume);
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error saving resume:", error);
+    }
+  };
+
   // ====================== JSX ======================
   return (
     <div>
@@ -139,7 +194,6 @@ const ResumeBuilder = () => {
           {/* ================= Left Panel (Forms) ================= */}
           <div className="relative lg:col-span-5 rounded-lg overflow-hidden">
             <div className="bg-white rounded-lg shadow-sw border border-gray-200 p-6 pt-1">
-              
               {/* Progress Bar Background */}
               <hr className="absolute top-0 left-0 right-0 border-2 border-gray-200" />
 
@@ -148,13 +202,14 @@ const ResumeBuilder = () => {
                 className="absolute top-0 left-0 h-1 bg-gradient-to-r
                 from-green-500 to-green-600 border-none transition-all duration-2000"
                 style={{
-                  width: `${(activeSectionIndex * 100) / (sections.length - 1)}%`,
+                  width: `${
+                    (activeSectionIndex * 100) / (sections.length - 1)
+                  }%`,
                 }}
               />
 
               {/* ================= Section Navigation ================= */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1">
-                
                 {/* Template & Color Selection */}
                 <div className="flex items-center gap-2 mb-2 mt-3">
                   <TemplateSelector
@@ -181,9 +236,7 @@ const ResumeBuilder = () => {
                   {activeSectionIndex !== 0 && (
                     <button
                       onClick={() =>
-                        setActiveSectionIndex((prev) =>
-                          Math.max(prev - 1, 0)
-                        )
+                        setActiveSectionIndex((prev) => Math.max(prev - 1, 0))
                       }
                       className="flex items-center gap-1 p-3 rounded-lg 
                       text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
@@ -279,7 +332,12 @@ const ResumeBuilder = () => {
               </div>
 
               {/* Save Button */}
-              <button className="bg-gradient-to-br from-green-100 to-green-200 ring-1 ring-green-300 text-green-600 hover:ring-green-400 transition-colors rounded-md px-6 py-2 mt-6 text-sm">
+              <button
+                onClick={() => {
+                  toast.promise(saveResume, { loading: "Saving...." });
+                }}
+                className="bg-gradient-to-br from-green-100 to-green-200 ring-1 ring-green-300 text-green-600 hover:ring-green-400 transition-colors rounded-md px-6 py-2 mt-6 text-sm"
+              >
                 Save Changes
               </button>
             </div>
@@ -288,7 +346,6 @@ const ResumeBuilder = () => {
           {/* ================= Right Panel (Preview) ================= */}
           <div className="lg:col-span-7 max-lg:mt-6">
             <div className="relative w-full">
-              
               {/* Action Buttons */}
               <div className="absolute bottom-3 left-0 right-0 flex justify-end gap-2">
                 {resumeData.public && (

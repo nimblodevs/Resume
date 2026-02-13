@@ -19,7 +19,7 @@ const Dashboard = () => {
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const [resume, setResume] = useState()
+  const [resume, setResume] = useState();
   const [allResumes, setAllResumes] = useState([]);
   const [title, setTitle] = useState("");
   const [resumeFile, setResumeFile] = useState(null);
@@ -86,50 +86,51 @@ const Dashboard = () => {
   // ==============================
   const uploadResume = async (e) => {
     e.preventDefault();
-  
+
     if (!title.trim()) return toast.error("Title is required");
     if (!resumeFile) return toast.error("Resume file is required");
-  
+
     setIsLoading(true);
-  
+
     try {
       // Convert PDF to text
       const resumeText = await pdftotext(resumeFile);
-  
+
       // Send to backend
       const { data } = await api.post(
         "/api/ai/upload-resume",
         { title, resumeText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       // Ensure resume object exists
       if (!data.resume || !data.resume._id) {
         throw new Error("Invalid response from server");
       }
-  
+
       // Reset form
       setTitle("");
       setResumeFile(null);
       setShowUploadResume(false);
-  
+
       // Update local state to include the new resume
       setAllResumes((prev) => [...prev, data.resume]);
-  
+
       // Navigate to builder
       navigate(`/app/builder/${data.resume._id}`);
-  
+
       toast.success("Resume uploaded successfully!");
     } catch (error) {
       console.error("Upload resume error:", error);
       toast.error(
-        error?.response?.data?.message || error.message || "Failed to upload resume"
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to upload resume"
       );
     } finally {
       setIsLoading(false);
     }
   };
-  
 
   // ==============================
   // Edit Resume Title
@@ -146,9 +147,7 @@ const Dashboard = () => {
 
       setAllResumes((prev) =>
         prev.map((resume) =>
-          resume._id === editResumeId
-            ? { ...resume, title }
-            : resume
+          resume._id === editResumeId ? { ...resume, title } : resume
         )
       );
 
@@ -164,25 +163,20 @@ const Dashboard = () => {
   // Delete Resume
   // ==============================
   const deleteResume = async (resumeId) => {
-    if (!window.confirm("Are you sure you want to delete this resume?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this resume?")) return;
 
     try {
-      const { data } = await api.delete(
-        `/api/resumes/delete/${resumeId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      setAllResumes((prev) =>
-        prev.filter((resume) => resume._id !== resumeId)
-      );
+      setAllResumes((prev) => prev.filter((resume) => resume._id !== resumeId));
 
       toast.success(data.message);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     }
   };
-
 
   return (
     <div>
@@ -359,7 +353,7 @@ const Dashboard = () => {
               />
 
               <button
-              disabled={isLoading}
+                disabled={isLoading}
                 type="submit"
                 className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors
                 flex items-center justify-center gap-2"

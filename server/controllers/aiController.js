@@ -19,14 +19,33 @@ export const enhanceProfessionalSummary = async (req, res) => {
     }
 
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-1.5-flash",
       messages: [
         {
           role: "system",
-          content: `You are an expert resume writer.Enhance the 
-          professional summary of a resume.Return 1–2 concise sentences 
-          highlighting key skills,experience, and career objectives.Make it 
-          compelling and ATS-friendly.Return ONLY the enhanced text.
+          content: `
+          You are a senior professional resume writer with expertise in ATS optimization.
+
+          Rewrite and significantly enhance the provided professional summary.
+          
+          Write exactly 4–5 complete, well-developed sentences in paragraph form.
+          Each sentence MUST end with a period (.).
+          Do not use bullet points, fragments, or incomplete thoughts.
+          Do not merge multiple ideas into one long run-on sentence.
+          
+          The final summary MUST be at least 300 characters in total length.
+          
+          Clearly highlight:
+          - Core skills and competencies
+          - Relevant experience
+          - Measurable achievements or impact
+          - Career objectives and value proposition
+          
+          Use strong action-oriented language, professional tone, and clear structure.
+          Ensure proper grammar and punctuation throughout.
+          
+          Return ONLY the final polished paragraph with no additional commentary.
+          
           `,
         },
         {
@@ -35,10 +54,10 @@ export const enhanceProfessionalSummary = async (req, res) => {
         },
       ],
       temperature: 0.7,
-      max_tokens: 120,
+      max_tokens: Number(process.env.AI_MAX_TOKENS) || 400,
     });
 
-    const enhancedContent = response.choices?.[0]?.message?.content?.trim();
+    const enhancedContent = response?.choices?.[0]?.message?.content?.trim();
 
     if (!enhancedContent) {
       return res.status(500).json({
@@ -53,7 +72,8 @@ export const enhanceProfessionalSummary = async (req, res) => {
     });
   } catch (error) {
     console.error("Enhance professional summary error:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       status: "error",
       message: "⚠️ Failed to enhance professional summary",
       error: error.message,
@@ -79,15 +99,21 @@ export const enhanceJobDescription = async (req, res) => {
     }
 
     const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: process.env.OPENAI_MODEL || "gemini-1.5-flash",
       messages: [
         {
           role: "system",
-          content: `You are an expert resume writer.Enhance the job description 
-          section of a resume.Return 1–2 concise sentences highlighting key 
-          responsibilities,achievements, and measurable impact.Use action verbs 
-          and quantifiable results where possible.Make it ATS-friendly.Return 
-          ONLY the enhanced text.`,
+          content: `
+You are an expert resume writer.
+
+Enhance and expand the job description section.
+Write 6–7 well-developed sentences.
+Each sentence MUST end with a period.
+Use strong action verbs and measurable achievements.
+Highlight responsibilities, impact, and results.
+Make the content ATS-friendly.
+Return ONLY the final formatted paragraph.
+          `,
         },
         {
           role: "user",
@@ -95,10 +121,10 @@ export const enhanceJobDescription = async (req, res) => {
         },
       ],
       temperature: 0.7,
-      max_tokens: 150,
+      max_tokens: Number(process.env.AI_MAX_TOKENS) || 400,
     });
 
-    const enhancedContent = response.choices?.[0]?.message?.content?.trim();
+    const enhancedContent = response?.choices?.[0]?.message?.content?.trim();
 
     if (!enhancedContent) {
       return res.status(500).json({
@@ -113,7 +139,8 @@ export const enhanceJobDescription = async (req, res) => {
     });
   } catch (error) {
     console.error("Enhance job description error:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       status: "error",
       message: "⚠️ Failed to enhance job description",
       error: error.message,
@@ -128,8 +155,7 @@ export const uploadResume = async (req, res) => {
     const { resumeText, title } = req.body;
     const userId = req.userId;
 
-    if (!userId)
-      return res.status(401).json({ message: "Unauthorized" });
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     if (!resumeText || !title)
       return res.status(400).json({ message: "Missing required fields" });
 
@@ -280,4 +306,3 @@ Return ONLY valid JSON using this structure:
     });
   }
 };
-
