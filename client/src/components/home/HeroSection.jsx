@@ -137,9 +137,9 @@ const HeroSection = () => {
                 className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-4"
               />
               <img
-                src="https://randomuser.me/api/portraits/men/75.jpg"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200"
                 alt="user5"
-                className="size-8 rounded-full border-2 border-white hover:-translate-y-0.5 transition z-5"
+                className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-5"
               />
             </div>
 
