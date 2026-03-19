@@ -17,6 +17,7 @@ import {
   FileText,
   FolderIcon,
   GraduationCap,
+  LoaderCircleIcon,
   Share2Icon,
   Sparkles,
   User,
@@ -64,6 +65,9 @@ const ResumeBuilder = () => {
 
   // Toggle background removal (used in personal info form)
   const [removeBackground, setRemoveBackground] = useState(false);
+
+  // Loading state for save operations
+  const [isSaving, setIsSaving] = useState(false);
 
   // ---------------------- Load Resume ----------------------
   const loadExistingResume = async () => {
@@ -147,6 +151,7 @@ const ResumeBuilder = () => {
   };
 
   const saveResume = async () => {
+    setIsSaving(true);
     try {
       let updateResumeData = structuredClone(resumeData);
 
@@ -168,9 +173,12 @@ const ResumeBuilder = () => {
       });
 
       setResumeData(data.resume);
-      toast.success(data.message);
+      toast.success(data.message || "Resume saved successfully!");
     } catch (error) {
       console.error("Error saving resume:", error);
+      toast.error(error?.response?.data?.message || "Failed to save resume");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -333,12 +341,12 @@ const ResumeBuilder = () => {
 
               {/* Save Button */}
               <button
-                onClick={() => {
-                  toast.promise(saveResume, { loading: "Saving...." });
-                }}
-                className="bg-gradient-to-br from-green-100 to-green-200 ring-1 ring-green-300 text-green-600 hover:ring-green-400 transition-colors rounded-md px-6 py-2 mt-6 text-sm"
+                onClick={saveResume}
+                disabled={isSaving}
+                className="bg-gradient-to-br from-green-100 to-green-200 ring-1 ring-green-300 text-green-600 hover:ring-green-400 disabled:opacity-60 disabled:cursor-not-allowed transition-colors rounded-md px-6 py-2 mt-6 text-sm flex items-center gap-2"
               >
-                Save Changes
+                {isSaving && <LoaderCircleIcon className="animate-spin size-4" />}
+                {isSaving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>

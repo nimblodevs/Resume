@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 import pdftotext from "react-pdftotext";
 
 const Dashboard = () => {
-  const { token } = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const [resume, setResume] = useState();
@@ -182,7 +182,7 @@ const Dashboard = () => {
     <div>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <p className="text-2xl font-medium mb-6 bg-linear-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden">
-          Welcome, Joe Doe
+          Welcome, {user?.name || "User"}
         </p>
 
         {/* Action Buttons */}
@@ -207,6 +207,14 @@ const Dashboard = () => {
         </div>
 
         <hr className="my-6 border-slate-300 sm:w-[305px]" />
+
+        {/* Empty State */}
+        {allResumes.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-slate-500 text-lg mb-2">No resumes yet</p>
+            <p className="text-slate-400 text-sm">Create a new resume or upload an existing one to get started.</p>
+          </div>
+        )}
 
         {/* Resume Cards */}
         <div className="grid grid-cols-2 sm:flex flex-wrap gap-4">

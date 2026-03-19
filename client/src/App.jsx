@@ -10,15 +10,28 @@ import { useDispatch, useSelector } from "react-redux";
 import api from "./configs/api";
 import { login, setLoading } from "./app/features/authSlice";
 import { Toaster } from "react-hot-toast";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token); 
+  
+  // Initialize auth from localStorage on app load
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken && !token) {
+      dispatch(login({ token: storedToken, user: null }));
+    } else {
+      dispatch(setLoading(false));
+    }
+  }, [dispatch, token]);
+
   const getUserData = async () => {
     try {
       if (token) {
         const { data } = await api.get("/api/users/data", {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (data.user) {
@@ -37,14 +50,21 @@ const App = () => {
   }, [token, dispatch]); 
 
   return (
-    <>
+    <ErrorBoundary>
       <Toaster />
       <Routes>
         {/* Public home page */}
         <Route path="/" element={<Home />} />
 
-        {/* App section with layout wrapper */}
-        <Route path="/app" element={<Layout />}>
+        {/* App section with layout wrapper - protected routes */}
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           {/* Default route when visiting /app */}
           <Route index element={<Dashboard />} />
 
@@ -58,7 +78,7 @@ const App = () => {
         {/* Optional 404 page */}
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
-    </>
+    </ErrorBoundary>
   );
 };
 

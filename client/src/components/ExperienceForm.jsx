@@ -1,13 +1,15 @@
-import { Briefcase, Loader2, Plus, Sparkle, Trash2 } from "lucide-react";
+import { Briefcase, AlertCircle, Loader2, Plus, Sparkle, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import api from "../configs/api";
 import toast from "react-hot-toast";
+import { validateDateRange } from "../utils/validation";
 
 const ExperienceForm = ({ data, onChange }) => {
   const { token } = useSelector((state) => state.auth);
 
   const [generatingIndex, setGeneratingIndex] = useState(-1);
+  const [errors, setErrors] = useState({});
 
   // Add a new experience
   const addExperience = () => {
@@ -32,6 +34,34 @@ const ExperienceForm = ({ data, onChange }) => {
     const updated = [...data];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
+    validateExperience(index, updated[index]);
+  };
+
+  // Validate a single experience entry
+  const validateExperience = (index, experience) => {
+    const expErrors = {};
+
+    if (!experience.company?.trim()) {
+      expErrors.company = "Company name is required";
+    }
+
+    if (!experience.position?.trim()) {
+      expErrors.position = "Position is required";
+    }
+
+    const dateError = validateDateRange(
+      experience.start_date,
+      experience.end_date,
+      experience.is_current
+    );
+    if (dateError) {
+      expErrors.date = dateError;
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      [index]: expErrors,
+    }));
   };
 
   const generateDescription = async (index) => {
@@ -111,44 +141,84 @@ const ExperienceForm = ({ data, onChange }) => {
               </div>
 
               {/* Company & Position */}
-              <input
-                type="text"
-                placeholder="Company Name"
-                value={experience.company || ""}
-                onChange={(e) =>
-                  updateExperience(index, "company", e.target.value)
-                }
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
-              <input
-                type="text"
-                placeholder="Job Title / Position"
-                value={experience.position || ""}
-                onChange={(e) =>
-                  updateExperience(index, "position", e.target.value)
-                }
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Company Name"
+                  value={experience.company || ""}
+                  onChange={(e) =>
+                    updateExperience(index, "company", e.target.value)
+                  }
+                  className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-2 transition-colors ${
+                    errors[index]?.company
+                      ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                  }`}
+                />
+                {errors[index]?.company && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors[index].company}
+                  </p>
+                )}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Job Title / Position"
+                  value={experience.position || ""}
+                  onChange={(e) =>
+                    updateExperience(index, "position", e.target.value)
+                  }
+                  className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-2 transition-colors ${
+                    errors[index]?.position
+                      ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                  }`}
+                />
+                {errors[index]?.position && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors[index].position}
+                  </p>
+                )}
+              </div>
 
               {/* Dates */}
-              <div className="flex gap-2">
-                <input
-                  type="month"
-                  value={experience.start_date || ""}
-                  onChange={(e) =>
-                    updateExperience(index, "start_date", e.target.value)
-                  }
-                  className="w-1/2 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
-                <input
-                  type="month"
-                  value={experience.is_current ? "" : experience.end_date || ""}
-                  onChange={(e) =>
-                    updateExperience(index, "end_date", e.target.value)
-                  }
-                  disabled={experience.is_current}
-                  className="w-1/2 px-3 py-2 text-sm rounded-lg border border-gray-300 disabled:bg-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                />
+              <div>
+                <div className="flex gap-2">
+                  <input
+                    type="month"
+                    value={experience.start_date || ""}
+                    onChange={(e) =>
+                      updateExperience(index, "start_date", e.target.value)
+                    }
+                    className={`w-1/2 px-3 py-2 text-sm rounded-lg border focus:ring-2 transition-colors ${
+                      errors[index]?.date
+                        ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                    }`}
+                  />
+                  <input
+                    type="month"
+                    value={experience.is_current ? "" : experience.end_date || ""}
+                    onChange={(e) =>
+                      updateExperience(index, "end_date", e.target.value)
+                    }
+                    disabled={experience.is_current}
+                    className={`w-1/2 px-3 py-2 text-sm rounded-lg border focus:ring-2 transition-colors disabled:bg-gray-300 ${
+                      errors[index]?.date
+                        ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+                    }`}
+                  />
+                </div>
+                {errors[index]?.date && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors[index].date}
+                  </p>
+                )}
               </div>
 
               {/* Currently Working Checkbox */}

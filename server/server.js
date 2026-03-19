@@ -11,23 +11,25 @@ const app = express();
 const PORT = process.env.PORT;
 
 /* ---------------- MIDDLEWARE ---------------- */
-// Enable CORS for your frontend URL only (replace with your actual frontend URL)
+// Enable CORS with environment-based configuration
 const allowedOrigins = [
-  'https://gg4rj5-5173.csb.app', // Frontend URL
-];
+  'http://localhost:5173', // Local development
+  'http://localhost:3000', // Local development alternative
+  process.env.FRONTEND_URL, // Production frontend URL from environment
+].filter(Boolean); // Remove undefined entries
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        // Allow requests from specified origins or if there is no origin (e.g., Postman or server-side requests)
+      // Allow requests from specified origins or if there is no origin (e.g., Postman or server-side requests)
+      if (allowedOrigins.includes(origin) || !origin) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
       }
     },
-    methods: ['GET', 'POST', 'OPTIONS','DELETE', 'PUT'], // Allow methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow custom headers like Content-Type, Authorization
+    methods: ['GET', 'POST', 'OPTIONS','DELETE', 'PUT'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 

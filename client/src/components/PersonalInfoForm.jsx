@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BriefcaseBusiness,
   Globe,
@@ -8,6 +8,7 @@ import {
   Phone,
   User,
 } from "lucide-react";
+import { validatePersonalInfo } from "../utils/validation";
 
 const PersonalInfoForm = ({
   data,
@@ -15,8 +16,15 @@ const PersonalInfoForm = ({
   removeBackground,
   setRemoveBackground,
 }) => {
+  const [errors, setErrors] = useState({});
+
   const handleChange = (field, value) => {
-    onChange({ ...data, [field]: value });
+    const updatedData = { ...data, [field]: value };
+    onChange(updatedData);
+    
+    // Validate on change to provide real-time feedback
+    const validationErrors = validatePersonalInfo(updatedData);
+    setErrors(validationErrors);
   };
 
   const fields = [
@@ -101,6 +109,7 @@ const PersonalInfoForm = ({
 
       {fields.map((field) => {
         const Icon = field.icon;
+        const hasError = errors[field.key];
         return (
           <div key={field.key} className="space-y-1 mt-5">
             <label className="flex items-center gap-2 text-gray-600 text-sm font-medium">
@@ -112,12 +121,19 @@ const PersonalInfoForm = ({
               type={field.type}
               value={data[field.key] || ""}
               onChange={(e) => handleChange(field.key, e.target.value)}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm"
+              className={`mt-1 w-full px-3 py-2 border rounded-lg outline-none focus:ring-2 transition-colors text-sm ${
+                hasError
+                  ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:ring-green-500 focus:border-green-500"
+              }`}
               required={field.required}
               placeholder={`Enter your ${field.label.toLowerCase()}${
                 field.required ? "" : " (optional)"
               }`}
             />
+            {hasError && (
+              <p className="text-red-500 text-xs mt-1">{hasError}</p>
+            )}
           </div>
         );
       })}
