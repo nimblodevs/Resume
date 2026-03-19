@@ -14,7 +14,7 @@ const PORT = process.env.PORT;
 // Enable CORS with environment-based configuration
 const allowedOrigins = [
   'http://localhost:5173', // Local development
-  'http://localhost:3000', // Local development alternative
+  'https://vm-wa0imf8vg289662vvttxzl.vusercontent.net', // Local development alternative
   process.env.FRONTEND_URL, // Production frontend URL from environment
 ].filter(Boolean); // Remove undefined entries
 
@@ -28,7 +28,7 @@ app.use(
         callback(new Error('Not allowed by CORS'));
       }
     },
-    methods: ['GET', 'POST', 'OPTIONS','DELETE', 'PUT'],
+    methods: ['GET', 'POST', 'OPTIONS', 'DELETE', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
