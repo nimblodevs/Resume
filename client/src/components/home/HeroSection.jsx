@@ -40,29 +40,29 @@ const HeroSection = () => {
           </div>
 
           <div className="flex gap-2">
-            <Link
-              to="/app?state=register"
-              className="hidden md:block px-6 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white"
-              hidden={user}
-            >
-              Get started
-            </Link>
-            <Link
-              to="/app?state=login"
-              className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900"
-              hidden={user}
-            >
-              Login
-            </Link>
-
-            <Link
-              to="/app"
-              className="hidden md:block px-8 py-2 bg-green-500
-            hover:bg-green-700 active:scale-95 transition-all rounded-full text-white"
-              hidden={!user}
-            >
-              Dashboard
-            </Link>
+            {!user ? (
+              <>
+                <Link
+                  to="/?state=register"
+                  className="hidden md:block px-6 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white"
+                >
+                  Get started
+                </Link>
+                <Link
+                  to="/?state=login"
+                  className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900"
+                >
+                  Login
+                </Link>
+              </>
+            ) : (
+              <Link
+                to="/app"
+                className="hidden md:block px-8 py-2 bg-green-500 hover:bg-green-700 active:scale-95 transition-all rounded-full text-white"
+              >
+                Dashboard
+              </Link>
+            )}
           </div>
 
           <button
@@ -186,28 +186,53 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-4 ">
-            <Link
-              to="/app?"
-              className="bg-green-500 hover:bg-green-600 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-green-400 flex items-center transition-colors"
-            >
-              Get started
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-arrow-right ml-1 size-4"
-                aria-hidden="true"
+            {user ? (
+              <Link
+                to="/app"
+                className="bg-green-500 hover:bg-green-600 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-green-400 flex items-center transition-colors"
               >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path>
-              </svg>
-            </Link>
+                Go to Dashboard
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-arrow-right ml-1 size-4"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </Link>
+            ) : (
+              <Link
+                to="/?state=register"
+                className="bg-green-500 hover:bg-green-600 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-green-400 flex items-center transition-colors"
+              >
+                Get started
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-arrow-right ml-1 size-4"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </Link>
+            )}
             <button className="flex items-center gap-2 border border-slate-400 hover:bg-green-50 transition rounded-full px-7 h-12 text-slate-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

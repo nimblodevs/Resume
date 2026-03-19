@@ -1,6 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const CallToAction = () => {
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <div
       id="cta"
@@ -10,11 +14,11 @@ const CallToAction = () => {
         <p className="text-xl font-medium max-w-md text-slate-800">
           Build a Professional Resume That Helps You Stand Out and Get Hired
         </p>
-        <a
-          href="#"
+        <Link
+          to={user ? "/app" : "/?state=register"}
           className="flex items-center gap-2 rounded py-3 px-8 bg-green-600 hover:bg-green-700 transition text-white"
         >
-          <span>Get Started</span>
+          <span>{user ? "Go to Dashboard" : "Get Started"}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -30,7 +34,7 @@ const CallToAction = () => {
             <path d="M5 12h14" />
             <path d="m12 5 7 7-7 7" />
           </svg>
-        </a>
+        </Link>
       </div>
     </div>
   );
