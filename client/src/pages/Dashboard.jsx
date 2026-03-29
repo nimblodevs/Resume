@@ -94,7 +94,14 @@ const Dashboard = () => {
 
     try {
       // Convert PDF to text
-      const resumeText = await pdftotext(resumeFile);
+      const extractedText = await pdftotext(resumeFile);
+      const resumeText = extractedText?.trim();
+
+      if (!resumeText) {
+        throw new Error(
+          "Could not read any text from this PDF. Please upload a text-based PDF resume."
+        );
+      }
 
       // Send to backend
       const { data } = await api.post(

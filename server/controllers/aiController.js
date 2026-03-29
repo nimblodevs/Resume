@@ -154,17 +154,25 @@ export const uploadResume = async (req, res) => {
   try {
     const { resumeText, title } = req.body;
     const userId = req.userId;
+    const cleanTitle = typeof title === "string" ? title.trim() : "";
+    const cleanResumeText =
+      typeof resumeText === "string" ? resumeText.trim() : "";
 
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
-    if (!resumeText || !title)
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!cleanTitle)
+      return res.status(400).json({ message: "Resume title is required" });
+    if (!cleanResumeText)
+      return res.status(400).json({
+        message:
+          "Resume text is empty. Please upload a text-based PDF and try again.",
+      });
 
     // OpenAI prompts
     const systemPrompt =
       "You are a strict resume parser. Extract only information explicitly present in the resume. Do not guess or invent data.";
     const userPrompt = `Extract structured data from the following resume text.
 Resume:
-${resumeText}
+${cleanResumeText}
 Return ONLY valid JSON using this structure:
 {
   "professional_summary": "",
@@ -284,7 +292,7 @@ Return ONLY valid JSON using this structure:
     // --- Save to DB ---
     const newResume = await Resume.create({
       userId,
-      title,
+      title: cleanTitle,
       professional_summary: parsedData.professional_summary || "",
       personal_info: parsedData.personal_info || {},
       experience: parsedData.experience,
