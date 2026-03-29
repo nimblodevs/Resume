@@ -20,6 +20,7 @@ import {
   Share2Icon,
   Sparkles,
   User,
+  Users,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import api from "../configs/api";
@@ -32,6 +33,7 @@ import ExperienceForm from "../components/ExperienceForm";
 import EducationForm from "../components/EducationForm";
 import ProjectForm from "../components/ProjectForm";
 import SkillsForm from "../components/SkillsForm";
+import RefereeForm from "../components/RefereeForm";
 
 // Preview & UI Components
 import ResumePreview from "../components/ResumePreview";
@@ -54,6 +56,7 @@ const ResumeBuilder = () => {
     education: [],
     project: [],
     skills: [],
+    referees: [],
     template: "classic",
     accent_color: "#3B82F6",
     public: false,
@@ -89,6 +92,7 @@ const ResumeBuilder = () => {
     { id: "education", name: "Education", icon: GraduationCap },
     { id: "projects", name: "Projects", icon: FolderIcon },
     { id: "skills", name: "Skills", icon: Sparkles },
+    { id: "referees", name: "Referees", icon: Users },
   ];
 
   // Currently active section
@@ -326,6 +330,15 @@ const ResumeBuilder = () => {
                     data={resumeData.skills}
                     onChange={(data) =>
                       setResumeData((prev) => ({ ...prev, skills: data }))
+                    }
+                  />
+                )}
+
+                {activeSection.id === "referees" && (
+                  <RefereeForm
+                    data={resumeData.referees || []}
+                    onChange={(data) =>
+                      setResumeData((prev) => ({ ...prev, referees: data }))
                     }
                   />
                 )}

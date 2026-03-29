@@ -182,6 +182,7 @@ Return ONLY valid JSON using this structure:
     "email": "",
     "phone": "",
     "location": "",
+    "profession": "",
     "linkedin": "",
     "website": ""
   },
@@ -210,6 +211,15 @@ Return ONLY valid JSON using this structure:
       "graduation_date": "",
       "gpa": ""
     }
+  ],
+  "referees": [
+    {
+      "name": "",
+      "position": "",
+      "company": "",
+      "email": "",
+      "phone": ""
+    }
   ]
 }`;
 
@@ -234,6 +244,21 @@ Return ONLY valid JSON using this structure:
         error: err.message,
       });
     }
+
+    // --- Clean personal info ---
+    parsedData.personal_info = {
+      image: parsedData.personal_info?.image || "",
+      full_name: parsedData.personal_info?.full_name || "",
+      email: parsedData.personal_info?.email || "",
+      phone: parsedData.personal_info?.phone || "",
+      location: parsedData.personal_info?.location || "",
+      profession:
+        parsedData.personal_info?.profession ||
+        parsedData.experience?.[0]?.position ||
+        "",
+      linkedin: parsedData.personal_info?.linkedin || "",
+      website: parsedData.personal_info?.website || "",
+    };
 
     // --- Clean experience dates ---
     parsedData.experience = (parsedData.experience || []).map((exp) => {
@@ -289,6 +314,15 @@ Return ONLY valid JSON using this structure:
       description: proj.description || "",
     }));
 
+    // --- Ensure referees array ---
+    parsedData.referees = (parsedData.referees || []).map((referee) => ({
+      name: referee.name || "",
+      position: referee.position || "",
+      company: referee.company || "",
+      email: referee.email || "",
+      phone: referee.phone || "",
+    }));
+
     // --- Save to DB ---
     const newResume = await Resume.create({
       userId,
@@ -298,6 +332,7 @@ Return ONLY valid JSON using this structure:
       experience: parsedData.experience,
       projects: parsedData.projects,
       education: parsedData.education,
+      referees: parsedData.referees,
     });
 
     // Return full resume object for frontend

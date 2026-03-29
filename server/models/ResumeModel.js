@@ -23,6 +23,7 @@ const ResumeSchema = new mongoose.Schema(
       email: { type: String, default: "" },
       phone: { type: String, default: "" },
       location: { type: String, default: "" },
+      profession: { type: String, default: "" },
       linkedin: { type: String, default: "" },
       website: { type: String, default: "" },
     },
@@ -56,6 +57,17 @@ const ResumeSchema = new mongoose.Schema(
         field: { type: String, default: "" },
         graduation_date: { type: Date },
         gpa: { type: String, default: "" },
+      },
+    ],
+
+    // Referees
+    referees: [
+      {
+        name: { type: String, default: "" },
+        position: { type: String, default: "" },
+        company: { type: String, default: "" },
+        email: { type: String, default: "" },
+        phone: { type: String, default: "" },
       },
     ],
   },

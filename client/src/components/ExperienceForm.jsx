@@ -9,6 +9,28 @@ const ExperienceForm = ({ data, onChange }) => {
 
   const [generatingIndex, setGeneratingIndex] = useState(-1);
 
+  const formatMonthValue = (value) => {
+    if (!value) return "";
+
+    if (typeof value === "string") {
+      if (/^\d{4}-\d{2}$/.test(value)) return value;
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return "";
+      return `${parsed.getUTCFullYear()}-${String(
+        parsed.getUTCMonth() + 1
+      ).padStart(2, "0")}`;
+    }
+
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+    }
+
+    return "";
+  };
+
   // Add a new experience
   const addExperience = () => {
     const newExperience = {
@@ -134,7 +156,7 @@ const ExperienceForm = ({ data, onChange }) => {
               <div className="flex gap-2">
                 <input
                   type="month"
-                  value={experience.start_date || ""}
+                  value={formatMonthValue(experience.start_date)}
                   onChange={(e) =>
                     updateExperience(index, "start_date", e.target.value)
                   }
@@ -142,7 +164,11 @@ const ExperienceForm = ({ data, onChange }) => {
                 />
                 <input
                   type="month"
-                  value={experience.is_current ? "" : experience.end_date || ""}
+                  value={
+                    experience.is_current
+                      ? ""
+                      : formatMonthValue(experience.end_date)
+                  }
                   onChange={(e) =>
                     updateExperience(index, "end_date", e.target.value)
                   }

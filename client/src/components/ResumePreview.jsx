@@ -3,6 +3,7 @@ import ClassicTemplate from "./templates/ClassicTemplate";
 import MinimalImageTemplate from "./templates/MinimalImageTemplate";
 import ModernTemplate from "./templates/ModernTemplate";
 import MinimalTemplate from "./templates/MinimalTemplate";
+import { Mail, Phone } from "lucide-react";
 
 // New templates
 import ExecutiveTemplate from "./templates/ExecutiveTemplate";
@@ -56,6 +57,38 @@ const ResumePreview = ({ data, template, accentColor, classes = "" }) => {
         }
       >
         {renderTemplate()}
+        {data?.referees?.length > 0 && (
+          <section className="px-6 pb-6">
+            <h2 className="text-lg font-semibold mb-3" style={{ color: accentColor }}>
+              Referees
+            </h2>
+            <div className="space-y-2">
+              {data.referees.map((referee, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-md p-3 text-sm text-gray-700"
+                >
+                  <p className="font-semibold text-gray-900">{referee.name}</p>
+                  <p>
+                    {[referee.position, referee.company].filter(Boolean).join(", ")}
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-1 text-xs text-gray-600">
+                    {referee.email && (
+                      <span className="inline-flex items-center gap-1">
+                        <Mail className="size-3" /> {referee.email}
+                      </span>
+                    )}
+                    {referee.phone && (
+                      <span className="inline-flex items-center gap-1">
+                        <Phone className="size-3" /> {referee.phone}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <style jsx="true">

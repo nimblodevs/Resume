@@ -128,7 +128,6 @@ const Dashboard = () => {
 
       toast.success("Resume uploaded successfully!");
     } catch (error) {
-      console.error("Upload resume error:", error);
       toast.error(
         error?.response?.data?.message ||
           error.message ||
