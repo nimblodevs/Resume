@@ -182,6 +182,23 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                             </div>
                         </section>
                     )}
+
+                    {Array.isArray(data.referees) && data.referees.length > 0 && (
+                        <section className="mt-8">
+                            <h2 className="text-sm uppercase tracking-widest font-semibold" style={{ color: accentColor }}>
+                                REFEREES
+                            </h2>
+                            <div className="space-y-3 mt-3 text-sm text-zinc-700">
+                                {data.referees.map((referee, index) => (
+                                    <div key={index}>
+                                        <p className="font-semibold text-zinc-900">{referee.name}</p>
+                                        <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                                        <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
                 </main>
             </div>
         </div>

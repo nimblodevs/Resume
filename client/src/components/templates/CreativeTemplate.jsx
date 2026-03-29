@@ -168,6 +168,26 @@ const CreativeTemplate = ({ data, accentColor }) => {
             ))}
           </section>
         )}
+
+        {Array.isArray(data.referees) && data.referees.length > 0 && (
+          <section className="mb-6">
+            <h2
+              className="text-xs uppercase tracking-widest mb-6 font-semibold"
+              style={{ color: accentColor }}
+            >
+              Referees
+            </h2>
+            <div className="space-y-3 text-sm text-gray-700">
+              {data.referees.map((referee, i) => (
+                <div key={i}>
+                  <p className="font-medium text-gray-900">{referee.name}</p>
+                  <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                  <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

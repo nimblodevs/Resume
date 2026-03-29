@@ -123,6 +123,23 @@ const MinimalTemplate = ({ data, accentColor }) => {
                     </div>
                 </section>
             )}
+
+            {Array.isArray(data.referees) && data.referees.length > 0 && (
+                <section className="mt-10">
+                    <h2 className="text-sm uppercase tracking-widest mb-6 font-medium" style={{ color: accentColor }}>
+                        Referees
+                    </h2>
+                    <div className="space-y-3 text-sm text-gray-700">
+                        {data.referees.map((referee, index) => (
+                            <div key={index}>
+                                <p className="font-medium text-gray-900">{referee.name}</p>
+                                <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                                <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

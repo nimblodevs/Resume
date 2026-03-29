@@ -157,6 +157,28 @@ const ElegantTemplate = ({ data, accentColor }) => {
           </div>
         </section>
       )}
+
+      {Array.isArray(data.referees) && data.referees.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-lg font-semibold mb-2">Referees</h2>
+          <div className="space-y-4">
+            {data.referees.map((referee, i) => (
+              <div
+                key={i}
+                className="bg-white p-5 rounded-xl border hover:shadow-md transition-shadow"
+              >
+                <h3 className="font-medium text-gray-900">{referee.name}</h3>
+                <p className="text-sm text-gray-700">
+                  {[referee.position, referee.company].filter(Boolean).join(", ")}
+                </p>
+                <p className="text-sm mt-1" style={{ color: accentColor }}>
+                  {[referee.email, referee.phone].filter(Boolean).join(" | ")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

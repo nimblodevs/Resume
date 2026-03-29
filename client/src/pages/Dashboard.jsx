@@ -8,6 +8,7 @@ import {
   UploadCloud,
   XIcon,
   LoaderCircleIcon,
+  CopyIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -184,6 +185,24 @@ const Dashboard = () => {
     }
   };
 
+  // ==============================
+  // Duplicate Resume
+  // ==============================
+  const duplicateResume = async (resumeId) => {
+    try {
+      const { data } = await api.post(
+        `/api/resumes/duplicate/${resumeId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setAllResumes((prev) => [data.resume, ...prev]);
+      toast.success(data.message || "Resume duplicated successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
   return (
     <div>
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -264,6 +283,11 @@ const Dashboard = () => {
                       setEditResumeId(resume._id);
                       setTitle(resume.title);
                     }}
+                    className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
+                  />
+
+                  <CopyIcon
+                    onClick={() => duplicateResume(resume._id)}
                     className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
                   />
                 </div>

@@ -1,6 +1,7 @@
 import express from "express";
 import {
   createResume,
+  duplicateResume,
   deleteResume,
   getPublicResumeById,
   getResumeById,
@@ -17,11 +18,12 @@ resumeRouter.post("/create", protect, createResume);
 resumeRouter.put("/update", upload.single("image"), protect, updateResume);
 // Delete a resume
 resumeRouter.delete("/delete/:resumeId", protect, deleteResume);
+// Duplicate a resume
+resumeRouter.post("/duplicate/:resumeId", protect, duplicateResume);
 // Get resume by ID (private)
 resumeRouter.get("/get/:resumeId", protect, getResumeById);
 // Get public resume by ID
 resumeRouter.get("/public/:resumeId", getPublicResumeById);
 
 export default resumeRouter;
-
 
