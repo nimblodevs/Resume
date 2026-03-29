@@ -228,6 +228,26 @@ const InfographicTemplate = ({ data, accentColor = "#2563eb" }) => {
               </div>
             </section>
           )}
+
+          {Array.isArray(data.referees) && data.referees.length > 0 && (
+            <section className="mt-8">
+              <h2
+                className="font-bold text-gray-900 text-lg mb-4 pb-1 border-b border-gray-300"
+                style={{ color: accentColor }}
+              >
+                Referees
+              </h2>
+              <div className="space-y-3 text-sm text-gray-700">
+                {data.referees.map((referee, idx) => (
+                  <div key={idx}>
+                    <div className="font-semibold text-gray-900">{referee.name}</div>
+                    <div>{[referee.position, referee.company].filter(Boolean).join(", ")}</div>
+                    <div>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </main>
       </div>
     </div>

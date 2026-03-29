@@ -168,6 +168,23 @@ const ModernTemplate = ({ data, accentColor }) => {
 						</section>
 					)}
 				</div>
+
+				{Array.isArray(data.referees) && data.referees.length > 0 && (
+					<section className="px-8 pb-8">
+						<h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">
+							Referees
+						</h2>
+						<div className="space-y-3 text-sm text-gray-700">
+							{data.referees.map((referee, index) => (
+								<div key={index}>
+									<p className="font-medium text-gray-900">{referee.name}</p>
+									<p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+									<p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+								</div>
+							))}
+						</div>
+					</section>
+				)}
 			</div>
 		</div>
 	);

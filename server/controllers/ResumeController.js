@@ -64,6 +64,52 @@ export const deleteResume = async (req, res) => {
 };
 
 // ---------------------
+// Duplicate Resume Controller
+// POST: /api/resumes/duplicate/:resumeId
+// ---------------------
+export const duplicateResume = async (req, res) => {
+  try {
+    const { resumeId } = req.params;
+    const userId = req.userId;
+
+    const existingResume = await Resume.findOne({ _id: resumeId, userId });
+
+    if (!existingResume) {
+      return res.status(404).json({
+        status: "error",
+        message: "❌ Resume not found",
+      });
+    }
+
+    const clonedResumeData = existingResume.toObject();
+    delete clonedResumeData._id;
+    delete clonedResumeData.createdAt;
+    delete clonedResumeData.updatedAt;
+    delete clonedResumeData.__v;
+
+    const duplicatedResume = await Resume.create({
+      ...clonedResumeData,
+      userId,
+      title: `${existingResume.title} (Copy)`,
+      public: false,
+    });
+
+    return res.status(201).json({
+      status: "success",
+      message: "✅ Resume duplicated successfully",
+      resume: duplicatedResume,
+    });
+  } catch (err) {
+    console.error("Duplicate resume error:", err);
+    return res.status(500).json({
+      status: "error",
+      message: "⚠️ Server error while duplicating resume",
+      error: err.message,
+    });
+  }
+};
+
+// ---------------------
 // Get Single Resume by ID
 // GET: /api/resumes/:resumeId
 // ---------------------

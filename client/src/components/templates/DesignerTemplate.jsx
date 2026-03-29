@@ -182,6 +182,34 @@ const DesignerTemplate = ({ data, accentColor }) => {
               </div>
             </section>
           )}
+
+          {data.referees?.length > 0 && (
+            <section>
+              <h2
+                className="text-2xl font-semibold mb-4"
+                style={{ color: accentColor }}
+              >
+                Referees
+              </h2>
+              <div className="space-y-4">
+                {data.referees.map((referee, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 border-l-4"
+                    style={{ borderColor: accentColor }}
+                  >
+                    <p className="text-lg font-medium">{referee.name}</p>
+                    <p className="text-gray-700">
+                      {[referee.position, referee.company].filter(Boolean).join(", ")}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {[referee.email, referee.phone].filter(Boolean).join(" | ")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </main>
       </div>
     </div>

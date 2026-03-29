@@ -154,6 +154,23 @@ const ClassicTemplate = ({ data, accentColor }) => {
                     </div>
                 </section>
             )}
+
+            {Array.isArray(data.referees) && data.referees.length > 0 && (
+                <section className="mb-6">
+                    <h2 className="text-xl font-semibold mb-4" style={{ color: accentColor }}>
+                        REFEREES
+                    </h2>
+                    <div className="space-y-3">
+                        {data.referees.map((referee, index) => (
+                            <div key={index} className="text-sm text-gray-700">
+                                <p className="font-semibold text-gray-900">{referee.name}</p>
+                                <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                                <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

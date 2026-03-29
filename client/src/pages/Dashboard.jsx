@@ -8,6 +8,7 @@ import {
   UploadCloud,
   XIcon,
   LoaderCircleIcon,
+  CopyIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -94,7 +95,15 @@ const Dashboard = () => {
 
     try {
       // Convert PDF to text
-      const resumeText = await pdftotext(resumeFile);
+      const extractedText = await pdftotext(resumeFile);
+      const resumeText = extractedText?.trim();
+
+      if (!resumeText) {
+        toast.error(
+          "Could not read any text from this PDF. Please upload a text-based PDF resume."
+        );
+        return;
+      }
 
       // Send to backend
       const { data } = await api.post(
@@ -121,7 +130,6 @@ const Dashboard = () => {
 
       toast.success("Resume uploaded successfully!");
     } catch (error) {
-      console.error("Upload resume error:", error);
       toast.error(
         error?.response?.data?.message ||
           error.message ||
@@ -173,6 +181,24 @@ const Dashboard = () => {
       setAllResumes((prev) => prev.filter((resume) => resume._id !== resumeId));
 
       toast.success(data.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error.message);
+    }
+  };
+
+  // ==============================
+  // Duplicate Resume
+  // ==============================
+  const duplicateResume = async (resumeId) => {
+    try {
+      const { data } = await api.post(
+        `/api/resumes/duplicate/${resumeId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setAllResumes((prev) => [data.resume, ...prev]);
+      toast.success(data.message || "Resume duplicated successfully");
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     }
@@ -258,6 +284,11 @@ const Dashboard = () => {
                       setEditResumeId(resume._id);
                       setTitle(resume.title);
                     }}
+                    className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
+                  />
+
+                  <CopyIcon
+                    onClick={() => duplicateResume(resume._id)}
                     className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors"
                   />
                 </div>

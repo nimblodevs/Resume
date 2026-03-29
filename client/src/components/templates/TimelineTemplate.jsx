@@ -130,6 +130,26 @@ const TimelineTemplate = ({ data, accentColor }) => {
           ))}
         </section>
       )}
+
+      {Array.isArray(data.referees) && data.referees.length > 0 && (
+        <section className="mt-12">
+          <h2
+            className="text-lg font-semibold mb-6"
+            style={{ color: accentColor }}
+          >
+            Referees
+          </h2>
+          <div className="space-y-4 text-sm text-gray-700">
+            {data.referees.map((referee, i) => (
+              <div key={i}>
+                <p className="font-medium text-gray-900">{referee.name}</p>
+                <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

@@ -131,6 +131,26 @@ const TechModernTemplate = ({ data, accentColor }) => {
           ))}
         </section>
       )}
+
+      {Array.isArray(data.referees) && data.referees.length > 0 && (
+        <section className="p-8 border-t border-gray-200">
+          <h2
+            className="text-2xl font-semibold mb-4"
+            style={{ color: accentColor }}
+          >
+            Referees
+          </h2>
+          <div className="space-y-3 text-sm text-gray-700">
+            {data.referees.map((referee, i) => (
+              <div key={i}>
+                <p className="font-semibold text-gray-900">{referee.name}</p>
+                <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

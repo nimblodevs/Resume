@@ -189,6 +189,34 @@ const TechTemplate = ({ data, accentColor }) => {
             </div>
           </section>
         )}
+
+        {Array.isArray(data.referees) && data.referees.length > 0 && (
+          <section className="mt-6">
+            <h2
+              className="text-2xl font-semibold mb-4 border-b"
+              style={{ borderColor: accentColor }}
+            >
+              Referees
+            </h2>
+            <div className="space-y-2">
+              {data.referees.map((referee, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 border-l-4"
+                  style={{ borderColor: accentColor }}
+                >
+                  <h3 className="text-lg font-medium text-gray-900">{referee.name}</h3>
+                  <p className="text-gray-700">
+                    {[referee.position, referee.company].filter(Boolean).join(", ")}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {[referee.email, referee.phone].filter(Boolean).join(" | ")}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

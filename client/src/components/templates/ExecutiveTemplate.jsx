@@ -222,6 +222,26 @@ const ExecutiveTemplate = ({ data = {}, accentColor = "#2563eb" }) => {
             </div>
           </section>
         )}
+
+        {Array.isArray(data.referees) && data.referees.length > 0 && (
+          <section className="mt-8">
+            <h2
+              className="text-lg font-bold uppercase tracking-wide mb-4 pb-2 border-b-2"
+              style={{ color: accentColor, borderColor: accentColor }}
+            >
+              Referees
+            </h2>
+            <div className="space-y-3 text-sm text-gray-700">
+              {data.referees.map((referee, idx) => (
+                <div key={idx}>
+                  <p className="font-semibold text-gray-900">{referee.name}</p>
+                  <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                  <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

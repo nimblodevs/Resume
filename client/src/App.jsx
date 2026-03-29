@@ -8,7 +8,7 @@ import Preview from "./pages/Preview";
 import Login from "./pages/Login";
 import { useDispatch, useSelector } from "react-redux";
 import api from "./configs/api";
-import { login, setLoading } from "./app/features/authSlice";
+import { login, logout, setLoading } from "./app/features/authSlice";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
@@ -18,7 +18,7 @@ const App = () => {
     try {
       if (token) {
         const { data } = await api.get("/api/users/data", {
-          headers: { Authorization: token },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (data.user) {
@@ -27,6 +27,7 @@ const App = () => {
       }
     } catch (error) {
       console.log(error.message); 
+      dispatch(logout());
     } finally {
       dispatch(setLoading(false)); 
     }

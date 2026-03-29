@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const MinimalImageTemplate = ({ data, accentColor }) => {
+    const profession =
+        data?.personal_info?.profession || data?.experience?.[0]?.position || "";
+
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         const [year, month] = dateStr.split("-");
@@ -35,7 +38,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                         {data.personal_info?.full_name || "Your Name"}
                     </h1>
                     <p className="uppercase text-zinc-600 font-medium text-sm tracking-widest">
-                        {data?.personal_info?.profession || "Profession"}
+                        {profession || "Profession"}
                     </p>
                 </div>
 
@@ -174,6 +177,23 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                                                 ))}
                                             </ul>
                                         )}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
+                    {Array.isArray(data.referees) && data.referees.length > 0 && (
+                        <section className="mt-8">
+                            <h2 className="text-sm uppercase tracking-widest font-semibold" style={{ color: accentColor }}>
+                                REFEREES
+                            </h2>
+                            <div className="space-y-3 mt-3 text-sm text-zinc-700">
+                                {data.referees.map((referee, index) => (
+                                    <div key={index}>
+                                        <p className="font-semibold text-zinc-900">{referee.name}</p>
+                                        <p>{[referee.position, referee.company].filter(Boolean).join(", ")}</p>
+                                        <p>{[referee.email, referee.phone].filter(Boolean).join(" | ")}</p>
                                     </div>
                                 ))}
                             </div>
