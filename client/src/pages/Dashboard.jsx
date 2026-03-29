@@ -99,10 +99,9 @@ const Dashboard = () => {
       const resumeText = extractedText?.trim();
 
       if (!resumeText) {
-        toast.error(
+        throw new Error(
           "Could not read any text from this PDF. Please upload a text-based PDF resume."
         );
-        return;
       }
 
       // Send to backend
