@@ -1,6 +1,9 @@
 import { Mail, Phone, MapPin } from "lucide-react";
 
 const MinimalImageTemplate = ({ data, accentColor }) => {
+    const profession =
+        data?.personal_info?.profession || data?.experience?.[0]?.position || "";
+
     const formatDate = (dateStr) => {
         if (!dateStr) return "";
         const [year, month] = dateStr.split("-");
@@ -35,7 +38,7 @@ const MinimalImageTemplate = ({ data, accentColor }) => {
                         {data.personal_info?.full_name || "Your Name"}
                     </h1>
                     <p className="uppercase text-zinc-600 font-medium text-sm tracking-widest">
-                        {data?.personal_info?.profession || "Profession"}
+                        {profession || "Profession"}
                     </p>
                 </div>
 

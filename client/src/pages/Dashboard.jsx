@@ -94,7 +94,15 @@ const Dashboard = () => {
 
     try {
       // Convert PDF to text
-      const resumeText = await pdftotext(resumeFile);
+      const extractedText = await pdftotext(resumeFile);
+      const resumeText = extractedText?.trim();
+
+      if (!resumeText) {
+        toast.error(
+          "Could not read any text from this PDF. Please upload a text-based PDF resume."
+        );
+        return;
+      }
 
       // Send to backend
       const { data } = await api.post(
@@ -121,7 +129,6 @@ const Dashboard = () => {
 
       toast.success("Resume uploaded successfully!");
     } catch (error) {
-      console.error("Upload resume error:", error);
       toast.error(
         error?.response?.data?.message ||
           error.message ||

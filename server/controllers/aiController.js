@@ -154,17 +154,25 @@ export const uploadResume = async (req, res) => {
   try {
     const { resumeText, title } = req.body;
     const userId = req.userId;
+    const cleanTitle = typeof title === "string" ? title.trim() : "";
+    const cleanResumeText =
+      typeof resumeText === "string" ? resumeText.trim() : "";
 
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
-    if (!resumeText || !title)
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!cleanTitle)
+      return res.status(400).json({ message: "Resume title is required" });
+    if (!cleanResumeText)
+      return res.status(400).json({
+        message:
+          "Resume text is empty. Please upload a text-based PDF and try again.",
+      });
 
     // OpenAI prompts
     const systemPrompt =
       "You are a strict resume parser. Extract only information explicitly present in the resume. Do not guess or invent data.";
     const userPrompt = `Extract structured data from the following resume text.
 Resume:
-${resumeText}
+${cleanResumeText}
 Return ONLY valid JSON using this structure:
 {
   "professional_summary": "",
@@ -174,6 +182,7 @@ Return ONLY valid JSON using this structure:
     "email": "",
     "phone": "",
     "location": "",
+    "profession": "",
     "linkedin": "",
     "website": ""
   },
@@ -202,6 +211,15 @@ Return ONLY valid JSON using this structure:
       "graduation_date": "",
       "gpa": ""
     }
+  ],
+  "referees": [
+    {
+      "name": "",
+      "position": "",
+      "company": "",
+      "email": "",
+      "phone": ""
+    }
   ]
 }`;
 
@@ -226,6 +244,21 @@ Return ONLY valid JSON using this structure:
         error: err.message,
       });
     }
+
+    // --- Clean personal info ---
+    parsedData.personal_info = {
+      image: parsedData.personal_info?.image || "",
+      full_name: parsedData.personal_info?.full_name || "",
+      email: parsedData.personal_info?.email || "",
+      phone: parsedData.personal_info?.phone || "",
+      location: parsedData.personal_info?.location || "",
+      profession:
+        parsedData.personal_info?.profession ||
+        parsedData.experience?.[0]?.position ||
+        "",
+      linkedin: parsedData.personal_info?.linkedin || "",
+      website: parsedData.personal_info?.website || "",
+    };
 
     // --- Clean experience dates ---
     parsedData.experience = (parsedData.experience || []).map((exp) => {
@@ -281,15 +314,25 @@ Return ONLY valid JSON using this structure:
       description: proj.description || "",
     }));
 
+    // --- Ensure referees array ---
+    parsedData.referees = (parsedData.referees || []).map((referee) => ({
+      name: referee.name || "",
+      position: referee.position || "",
+      company: referee.company || "",
+      email: referee.email || "",
+      phone: referee.phone || "",
+    }));
+
     // --- Save to DB ---
     const newResume = await Resume.create({
       userId,
-      title,
+      title: cleanTitle,
       professional_summary: parsedData.professional_summary || "",
       personal_info: parsedData.personal_info || {},
       experience: parsedData.experience,
       projects: parsedData.projects,
       education: parsedData.education,
+      referees: parsedData.referees,
     });
 
     // Return full resume object for frontend
