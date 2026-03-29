@@ -13,7 +13,7 @@ const PORT = process.env.PORT;
 /* ---------------- MIDDLEWARE ---------------- */
 // Enable CORS for your frontend URL only (replace with your actual frontend URL)
 const allowedOrigins = [
-  'https://gg4rj5-5173.csb.app', // Frontend URL
+  "https://nnstq9-5173.csb.app", // Frontend URL
 ];
 
 app.use(
@@ -23,11 +23,11 @@ app.use(
         // Allow requests from specified origins or if there is no origin (e.g., Postman or server-side requests)
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ['GET', 'POST', 'OPTIONS','DELETE', 'PUT'], // Allow methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow custom headers like Content-Type, Authorization
+    methods: ["GET", "POST", "OPTIONS", "DELETE", "PUT"], // Allow methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow custom headers like Content-Type, Authorization
   })
 );
 
@@ -68,7 +68,9 @@ const connectWithRetry = async () => {
     console.log("💾 Database connected successfully");
     retryDelay = 5000; // Reset delay after success
   } catch (err) {
-    console.error(`❌ DB connection failed. Retrying in ${retryDelay / 1000}s...`);
+    console.error(
+      `❌ DB connection failed. Retrying in ${retryDelay / 1000}s...`
+    );
     setTimeout(() => {
       retryDelay = Math.min(retryDelay * 2, 30000); // exponential backoff
       isConnecting = false;
